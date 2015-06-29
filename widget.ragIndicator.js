@@ -48,23 +48,30 @@
 				.removeClass('red-flash')
 				.removeClass('dim')
 			
-			indicatorElement.addClass(stateArray[stateObject.value]);
-			var indicatorText = stateArray[stateObject.value] + '_text';
-			//Get our Indicator Type
-			stateElement.html((_.isUndefined(stateObject[indicatorText]) ? "" : stateObject[indicatorText]));
-			var indicatorType = (_.isUndefined(stateObject.indicator_type) ? "" : stateObject.indicator_type.toLowerCase());
-			
-			switch (indicatorType) {
-				case 'dim' : 
-					indicatorElement.addClass('dim');
-					break;
-				case 'flash' :
-					var indicatorTypeClass = stateArray[stateObject.value] + '-flash';
-					indicatorElement.addClass(indicatorTypeClass);				
-					break;
-				default:
-					//this is normal					
-			}			
+			var ragValue = _.isUndefined(stateObject.value) ? -1 : stateObject.value;			
+			//If we have a valid value set, continue
+			if (stateArray[stateObject.value]) {
+				indicatorElement.addClass(stateArray[stateObject.value]);
+				var indicatorText = stateArray[stateObject.value] + '_text';
+				//Get our Indicator Type
+				stateElement.html((_.isUndefined(stateObject[indicatorText]) ? "" : stateObject[indicatorText]));
+				var indicatorType = (_.isUndefined(stateObject.indicator_type) ? "" : stateObject.indicator_type.toLowerCase());
+				
+				switch (indicatorType) {
+					case 'dim' : 
+						indicatorElement.addClass('dim');
+						break;
+					case 'flash' :
+						var indicatorTypeClass = stateArray[stateObject.value] + '-flash';
+						indicatorElement.addClass(indicatorTypeClass);				
+						break;
+					default:
+						//this is normal					
+				}								
+			} else {
+				stateElement.html('Error');
+			}
+		
         }
 
         this.render = function (element) {
