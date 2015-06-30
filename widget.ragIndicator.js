@@ -7,22 +7,11 @@
 	freeboard.addStyle('.rag-light.green', "background-color:#00B60E;box-shadow: 0px 0px 15px #00B60E;border-color:#FDF1DF;");
 	freeboard.addStyle('.rag-text', "margin-top:10px;");
     //Flashing status for the light
-	freeboard.addStyle('.red-flash', "animation: red-flash 1000ms infinite;")
-	freeboard.addStyle('.amber-flash', "animation: amber-flash 1000ms infinite;")
-	freeboard.addStyle('.green-flash', "animation: green-flash 1000ms infinite;")
+	freeboard.addStyle('.red-flash', "animation: red-flash 500ms infinite alternate;")
+	freeboard.addStyle('.amber-flash', "animation: amber-flash 500ms infinite alternate;")
+	freeboard.addStyle('.green-flash', "animation: green-flash 500ms infinite alternate;")
 	//Dim status for the light
 	freeboard.addStyle('.dim', "opacity: 0.6;");
-	
-	//Keyframes for the css flashing
-	//Unless we use a library for adding keyframes to the DOM, this hack will have to suffice
-	var greenRule = "@keyframes green-flash {0% {background-color: #2A2A2A; box-shadow: 0px 0px 15px #2A2A2A;} 100% {background-color: #00B60E; box-shadow: 0px 0px 15px #00B60E;}}";
-	var amberRule = "@keyframes amber-flash {0% {background-color: #2A2A2A; box-shadow: 0px 0px 15px #2A2A2A;} 100% {background-color: #E49B00; box-shadow: 0px 0px 15px #E49B00;}}";
-	var redRule   = "@keyframes red-flash   {0% {background-color: #2A2A2A; box-shadow: 0px 0px 15px #2A2A2A;} 100% {background-color: #D90000; box-shadow: 0px 0px 15px #D90000;}}";
-	
-	//Add them to our CSS
-	var style = document.createElement('style');
-    style.innerHTML = greenRule + amberRule + redRule;
-    document.head.appendChild(style);     
 	
 	var ragWidget = function (settings) {
         var self = this;
@@ -31,13 +20,34 @@
         var indicatorElement = $('<div class="rag-light"></div>');
         var currentSettings = settings;
 		
+		//define our keyframes for our flashing lights
+		$.keyframe.define([{
+			name: 'green-flash',
+			'0%': {'background-color': '#2A2A2A', 'box-shadow': '0px 0px 0px #2A2A2A'},
+			'100%': {'background-color': '#00B60E', 'box-shadow': '0px 0px 15px #00B60E'}
+		
+		}]); 
+		$.keyframe.define([{
+			name: 'amber-flash',
+			'0%': {'background-color': '#2A2A2A', 'box-shadow': '0px 0px 0px #2A2A2A'},
+			'100%': {'background-color': '#E49B00', 'box-shadow': '0px 0px 15px #E49B00'}
+		
+		}]); 
+		$.keyframe.define([{
+			name: 'red-flash',
+			'0%': {'background-color': '#2A2A2A', 'box-shadow': '0px 0px 0px #2A2A2A'},
+			'100%': {'background-color': '#D90000', 'box-shadow': '0px 0px 15px #D90000'}
+		
+		}]); 
+		
 		//store our calculated values in an object
 		var stateObject = {};
 		
 		//array of our values: 0=Green, 2=Amber, 3=Red
 		var stateArray = ["green", "amber", "red"];
         
-		function updateState() {            
+		function updateState() {         
+		
 			//Remove all classes from our indicator light
 			indicatorElement
 				.removeClass('red')
@@ -69,16 +79,14 @@
 						//this is normal					
 				}								
 			} else {
-				stateElement.html('Error');
+				//stateElement.html('Error');
 			}
 		
         }
 
         this.render = function (element) {
             $(element).append(titleElement).append(indicatorElement).append(stateElement);			
-        }
-		
-		 
+        }		
 
         this.onSettingsChanged = function (newSettings) {
             currentSettings = newSettings;
@@ -105,6 +113,9 @@
     freeboard.loadWidgetPlugin({
         type_name: "ragIndicator",
         display_name: "RAG Indicator",
+		external_scripts: [
+			"plugins/thirdparty/jquery.keyframes.min.js"
+		],
         settings: [
             {
                 name: "title",
